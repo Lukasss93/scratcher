@@ -1,5 +1,6 @@
 import {app, BrowserWindow, shell} from 'electron'
 import path from 'node:path'
+import {registerIpcHandles} from "./ipc-handles.ts";
 
 // The built directory structure
 //
@@ -22,6 +23,7 @@ function createWindow() {
     win = new BrowserWindow({
         icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
         webPreferences: {
+            contextIsolation: true,
             preload: path.join(__dirname, 'preload.js'),
         },
     })
@@ -39,6 +41,8 @@ function createWindow() {
 
         return { action: 'deny' };
     })
+
+    registerIpcHandles(win);
 
     if (VITE_DEV_SERVER_URL) {
         win.loadURL(VITE_DEV_SERVER_URL)
