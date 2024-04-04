@@ -1,4 +1,4 @@
-import {app, BrowserWindow} from 'electron'
+import {app, BrowserWindow, shell} from 'electron'
 import path from 'node:path'
 
 // The built directory structure
@@ -29,6 +29,15 @@ function createWindow() {
     // Test active push message to Renderer-process.
     win.webContents.on('did-finish-load', () => {
         win?.webContents.send('main-process-message', (new Date).toLocaleString())
+    })
+
+    // open external links in the default browser
+    win.webContents.setWindowOpenHandler(({ url }) => {
+        if (url.startsWith('http:') || url.startsWith('https:')) {
+            shell.openExternal(url)
+        }
+
+        return { action: 'deny' };
     })
 
     if (VITE_DEV_SERVER_URL) {
